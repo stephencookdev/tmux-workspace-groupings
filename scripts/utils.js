@@ -18,7 +18,7 @@ const getAllTmuxSessions = () => {
 
 const getAllTmuxSessionWindows = () => {
   return execSync(
-    "tmux list-windows -a -F '#{session_name}//#{session_attached}//#{window_name}//#{window_active}'"
+    "tmux list-windows -a -F '#{session_name}//#{session_attached}//#{window_name}//#{window_active}//#{pane_id}'"
   )
     .toString()
     .split("\n")
@@ -41,17 +41,19 @@ const getTmuxWindows = (targetSession) => {
   return windowsForTarget;
 };
 
-const tmuxCreate = (target, workspace, sessionTargets) => {
+const tmuxCreate = (target, workspace, sessionTargets, cmd = "") => {
   const aliveSessions = getAllTmuxSessions().map(
     ([sessionName]) => sessionName
   );
 
   sessionTargets.forEach((session) => {
     if (aliveSessions.includes(session)) {
-      execSync(`tmux new-window -t ${session} -n ${target} -c ${workspace}`);
+      execSync(
+        `tmux new-window -t ${session} -n ${target} -c ${workspace} ${cmd}`
+      );
     } else {
       execSync(
-        `tmux new-session -A -d -s ${session} -n ${target} -c ${workspace}`
+        `tmux new-session -A -d -s ${session} -n ${target} -c ${workspace} ${cmd}`
       );
     }
   });
@@ -59,6 +61,10 @@ const tmuxCreate = (target, workspace, sessionTargets) => {
 
 const closeTmuxWindow = (session, win) => {
   execSync(`tmux kill-window -t ${session}:${win}`);
+};
+
+const restoreLastTmuxSession = () => {
+  execSync("tmux switch-client -l");
 };
 
 const runInAlternateScreen = () => {
@@ -79,4 +85,5 @@ module.exports = {
   tmuxCreate,
   closeTmuxWindow,
   runInAlternateScreen,
+  restoreLastTmuxSession,
 };

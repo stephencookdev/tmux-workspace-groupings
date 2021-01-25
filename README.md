@@ -26,6 +26,5 @@ This plugin is super early-development, TODO remains:
 
 - remove the need to `npm install` post-install
 - allow configurability of workspace and session targets
-- come up with a better way to handle `prefix + B` for speed (`___` session?)
 - implement initialisation commands
 - allow easy `git pull` of new repos

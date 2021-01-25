@@ -1,7 +1,7 @@
 const path = require("path");
 const React = require("react");
 const { useRef, useState } = React;
-const { render, useApp, useInput, Box, Text, Spacer } = require("ink");
+const { useInput, Box, Text, Spacer } = require("ink");
 const fuzzysort = require("fuzzysort");
 const importJsx = require("import-jsx");
 const FullScreen = importJsx("./full_screen.jsx");
@@ -11,6 +11,7 @@ const {
   getDirectories,
   tmuxSwitch,
   tmuxCreate,
+  restoreLastTmuxSession,
 } = require("./utils");
 
 const WORKSPACE = "/Users/stephen/workspace";
@@ -19,7 +20,6 @@ const SESSION_TARGETS = ["build", "git"];
 runInAlternateScreen();
 
 const App = () => {
-  const { exit } = useApp();
   const [text, setText] = useState("");
   const [pointer, setPointer] = useState(0);
   const dirsRef = useRef(getDirectories(WORKSPACE));
@@ -33,9 +33,15 @@ const App = () => {
 
   const roundedPointer = (pointer + matchingDirs.length) % matchingDirs.length;
 
+  const exit = () => {
+    setText("");
+    setPointer(0);
+  };
+
   useInput((input, key) => {
     if (key.escape) {
       exit();
+      restoreLastTmuxSession();
     } else if (key.return) {
       const matchingDir = matchingDirs[roundedPointer];
       if (!windowSessions.includes(matchingDir)) {
@@ -89,4 +95,4 @@ const App = () => {
   );
 };
 
-render(<App />);
+module.exports = App;
