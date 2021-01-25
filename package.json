@@ -1,0 +1,10 @@
+{
+  "name": "tmux-workspace-groupings-plugin",
+  "version": "1.0.0",
+  "dependencies": {
+    "fuzzysort": "^1.1.4",
+    "import-jsx": "^4.0.0",
+    "ink": "^3.0.8",
+    "react": "^17.0.1"
+  }
+}
