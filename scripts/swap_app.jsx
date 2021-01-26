@@ -4,9 +4,8 @@ const React = require("react");
 const { useEffect, useState } = React;
 const { useStdin, Box, Text, Spacer } = require("ink");
 const fuzzysort = require("fuzzysort");
-const importJsx = require("import-jsx");
-const FullScreen = importJsx("./full_screen.jsx");
-const Spinner = importJsx("./spinner.jsx");
+const FullScreen = require("./full_screen.jsx");
+const Spinner = require("./spinner.jsx");
 const {
   runInAlternateScreen,
   getTmuxWindows,

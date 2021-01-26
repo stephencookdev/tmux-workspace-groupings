@@ -1,10 +1,21 @@
 {
   "name": "tmux-workspace-groupings-plugin",
   "version": "1.0.0",
+  "scripts": {
+    "build": "rm -rf dist ; webpack --mode production"
+  },
   "dependencies": {
     "fuzzysort": "^1.1.4",
-    "import-jsx": "^4.0.0",
     "ink": "^3.0.8",
     "react": "^17.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.17.0",
+    "webpack-cli": "^4.4.0",
+    "webpack-node-externals": "^2.5.2"
   }
 }

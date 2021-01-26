@@ -1,4 +1,4 @@
-const { tmuxSwitch, getAllTmuxSessionWindows } = require("./utils");
+const { tmuxSwitch, getAllTmuxSessionWindows } = require("../utils");
 
 const SESSION_TARGETS = ["build", "git"];
 
