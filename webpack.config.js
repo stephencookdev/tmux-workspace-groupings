@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const nodeExternals = require("webpack-node-externals");
 
 const entryDir = path.resolve(__dirname, "scripts/entry");
 const files = fs.readdirSync(entryDir);
@@ -21,5 +20,8 @@ module.exports = {
     filename: "[name]",
     path: path.resolve(__dirname, "dist"),
   },
-  externals: [nodeExternals()],
+  externals: {
+    bufferutil: "bufferutil",
+    "utf-8-validate": "utf-8-validate",
+  },
 };
