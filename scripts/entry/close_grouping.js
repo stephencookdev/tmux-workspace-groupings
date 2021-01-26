@@ -1,6 +1,7 @@
 const { closeTmuxWindow, getAllTmuxSessionWindows } = require("../utils");
+const { getTmuxOption } = require("../options");
 
-const SESSION_TARGETS = ["build", "git"];
+const SESSION_TARGETS = getTmuxOption("@groupings_session_targets").split(",");
 
 const windows = getAllTmuxSessionWindows();
 

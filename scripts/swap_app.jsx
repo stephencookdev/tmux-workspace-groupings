@@ -15,11 +15,6 @@ const {
   restoreLastTmuxSession,
 } = require("./utils");
 
-const WORKSPACE = "/Users/stephen/workspace";
-const SESSION_TARGETS = ["build", "git"];
-const FILE_SYSTEM_MIN_INTERVAL = 1000;
-const FILE_SYSTEM_MAX_INTERVAL = 15000;
-
 runInAlternateScreen();
 
 const useTextInput = (callback) => {
@@ -65,38 +60,52 @@ const useTextInput = (callback) => {
 };
 
 let lastFileSystemCheck = 0;
-const getFilesystemRefs = () => ({
-  dirs: getDirectories(WORKSPACE),
-  windowSessions: getTmuxWindows(SESSION_TARGETS[0]),
+const getFilesystemRefs = (workspace, sessionTargets) => ({
+  dirs: getDirectories(workspace),
+  windowSessions: getTmuxWindows(sessionTargets[0]),
 });
 
-const useFileSystemRefs = () => {
-  const [fileSystemRefs, setFileSystemRefs] = useState(getFilesystemRefs());
+const useFileSystemRefs = ({
+  workspace,
+  sessionTargets,
+  fileSystemMinInterval,
+  fileSystemMaxInterval,
+}) => {
+  const [fileSystemRefs, setFileSystemRefs] = useState(
+    getFilesystemRefs(workspace, sessionTargets)
+  );
 
   const updateFromFilesystem = () => {
     const timestamp = Date.now();
-    if (timestamp - lastFileSystemCheck > FILE_SYSTEM_MIN_INTERVAL) {
+    if (timestamp - lastFileSystemCheck > fileSystemMinInterval) {
       lastFileSystemCheck = timestamp;
-      setFileSystemRefs(getFilesystemRefs());
+      setFileSystemRefs(getFilesystemRefs(workspace, sessionTargets));
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(
-      updateFromFilesystem,
-      FILE_SYSTEM_MAX_INTERVAL
-    );
+    const interval = setInterval(updateFromFilesystem, fileSystemMaxInterval);
     return () => clearInterval(interval);
   });
 
   return [fileSystemRefs, updateFromFilesystem];
 };
 
-const App = () => {
+const App = ({
+  workspace,
+  sessionTargets,
+  fileSystemMinInterval,
+  fileSystemMaxInterval,
+}) => {
   const [text, setText] = useState("");
   const [pointer, setPointer] = useState(0);
   const [isCloning, setIsCloning] = useState(false);
-  const [fileSystemRefs, updateFromFilesystem] = useFileSystemRefs();
+  const [fileSystemRefs, updateFromFilesystem] = useFileSystemRefs({
+    workspace,
+    sessionTargets,
+    fileSystemMinInterval,
+    fileSystemMaxInterval,
+  });
 
   const { dirs, windowSessions } = fileSystemRefs;
   const matchingDirs = text
@@ -134,21 +143,21 @@ const App = () => {
       if (!windowSessions.includes(matchingDir)) {
         tmuxCreate(
           matchingDir,
-          path.join(WORKSPACE, matchingDir),
-          SESSION_TARGETS
+          path.join(workspace, matchingDir),
+          sessionTargets
         );
       }
-      tmuxSwitch(SESSION_TARGETS[0], matchingDir);
+      tmuxSwitch(sessionTargets[0], matchingDir);
       exit();
     } else if (key.return && gitHubMatch) {
       setIsCloning(true);
-      exec(`git clone ${text} ${path.join(WORKSPACE, gitHubMatch)}`, () => {
+      exec(`git clone ${text} ${path.join(workspace, gitHubMatch)}`, () => {
         tmuxCreate(
           gitHubMatch,
-          path.join(WORKSPACE, gitHubMatch),
-          SESSION_TARGETS
+          path.join(workspace, gitHubMatch),
+          sessionTargets
         );
-        tmuxSwitch(SESSION_TARGETS[0], gitHubMatch);
+        tmuxSwitch(sessionTargets[0], gitHubMatch);
         exit();
       });
     } else if (key.downArrow) {
