@@ -27,4 +27,3 @@ This plugin is super early-development, TODO remains:
 - remove the need to `npm install` post-install
 - allow configurability of workspace and session targets
 - implement initialisation commands
-- allow easy `git pull` of new repos
