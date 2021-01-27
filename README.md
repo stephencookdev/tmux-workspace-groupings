@@ -16,6 +16,13 @@ set -g @groupings_workspace_directory /Users/batman/projects
 
 Hit `prefix + I` to install.
 
+## Commands
+
+Once installed, the following bindings are set up:
+
+- `prefix + B` — this opens the create/swap menu
+- `prefix + b` — this swaps between sessions of a grouping
+
 ## Options
 
 ```bash
@@ -46,4 +53,3 @@ set -g @groupings_special_window_name "___",
 This plugin is super early-development, TODO remains:
 
 - implement initialisation commands
-- document the commands
