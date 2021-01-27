@@ -76,6 +76,14 @@ const runInAlternateScreen = () => {
   });
 };
 
+const throwTmuxError = (err) => {
+  execSync(`tmux display-message '${err}'`);
+  process.exit(
+    // lie about our exit code so we don't show weird errors to the user, only the display-message error
+    0
+  );
+};
+
 module.exports = {
   getDirectories,
   getAllTmuxSessions,
@@ -86,4 +94,5 @@ module.exports = {
   closeTmuxWindow,
   runInAlternateScreen,
   restoreLastTmuxSession,
+  throwTmuxError,
 };

@@ -1,4 +1,4 @@
-const { getAllTmuxSessionWindows } = require("../utils");
+const { getAllTmuxSessionWindows, throwTmuxError } = require("../utils");
 const { getTmuxOption } = require("../options");
 
 const SPECIAL_SWAPPER_SESSION = getTmuxOption(
@@ -15,7 +15,7 @@ const FILE_SYSTEM_MAX_INTERVAL = getTmuxOption(
 );
 
 if (!WORKSPACE) {
-  throw new Error(
+  throwTmuxError(
     "You need to incude a `set-option -g workspace MY_WORKSPACE` to point to where your workspace directory is"
   );
 }
