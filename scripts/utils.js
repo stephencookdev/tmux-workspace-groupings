@@ -63,6 +63,10 @@ const closeTmuxWindow = (session, win) => {
   execSync(`tmux kill-window -t ${session}:${win}`);
 };
 
+const killTmuxSession = (session) => {
+  execSync(`tmux kill-session -t ${session}`);
+};
+
 const restoreLastTmuxSession = () => {
   execSync("tmux switch-client -l");
 };
@@ -92,6 +96,7 @@ module.exports = {
   getTmuxWindows,
   tmuxCreate,
   closeTmuxWindow,
+  killTmuxSession,
   runInAlternateScreen,
   restoreLastTmuxSession,
   throwTmuxError,
