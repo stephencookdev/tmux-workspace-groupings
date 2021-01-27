@@ -22,6 +22,7 @@ Once installed, the following bindings are set up:
 
 - `prefix + B` — this opens the create/swap menu
 - `prefix + b` — this swaps between sessions of a grouping
+- `prefix + X` — this closes all windows (in all sessions) of a particular grouping
 
 ## Options
 
