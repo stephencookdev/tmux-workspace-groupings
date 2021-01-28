@@ -13,6 +13,7 @@ const {
   tmuxSwitch,
   tmuxCreate,
   restoreLastTmuxSession,
+  applyConfig,
 } = require("./utils");
 
 runInAlternateScreen();
@@ -96,6 +97,7 @@ const App = ({
   sessionTargets,
   fileSystemMinInterval,
   fileSystemMaxInterval,
+  pluginRoot,
 }) => {
   const [text, setText] = useState("");
   const [pointer, setPointer] = useState(0);
@@ -140,12 +142,10 @@ const App = ({
       restoreLastTmuxSession();
     } else if (key.return && dirs[roundedPointer]) {
       const matchingDir = matchingDirs[roundedPointer];
+      const groupingWorkspace = path.join(workspace, matchingDir);
       if (!windowSessions.includes(matchingDir)) {
-        tmuxCreate(
-          matchingDir,
-          path.join(workspace, matchingDir),
-          sessionTargets
-        );
+        tmuxCreate(matchingDir, groupingWorkspace, sessionTargets);
+        applyConfig(matchingDir, sessionTargets, groupingWorkspace, pluginRoot);
       }
       tmuxSwitch(sessionTargets[0], matchingDir);
       exit();

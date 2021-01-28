@@ -1,3 +1,4 @@
+const path = require("path");
 const { getAllTmuxSessionWindows, throwTmuxError } = require("../utils");
 const { getTmuxOption } = require("../options");
 
@@ -13,6 +14,7 @@ const FILE_SYSTEM_MIN_INTERVAL = getTmuxOption(
 const FILE_SYSTEM_MAX_INTERVAL = getTmuxOption(
   "@groupings_file_system_poll_max_interval"
 );
+const PLUGIN_ROOT = path.join(__dirname, ".."); // we will be at `dist`, so one up should be the plugin root
 
 if (!WORKSPACE) {
   throwTmuxError(
@@ -46,6 +48,7 @@ if (isSpecialOpen) {
       sessionTargets: SESSION_TARGETS,
       fileSystemMinInterval: FILE_SYSTEM_MIN_INTERVAL,
       fileSystemMaxInterval: FILE_SYSTEM_MAX_INTERVAL,
+      pluginRoot: PLUGIN_ROOT,
     })
   );
 } else if (specialWindow) {

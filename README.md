@@ -24,6 +24,40 @@ Once installed, the following bindings are set up:
 - `prefix + b` — this swaps between sessions of a grouping
 - `prefix + X` — this closes all windows (in all sessions) of a particular grouping
 
+## Initial panes
+
+You can initalise panes with commands by creating some JSON config files.
+
+For example, if you had a project called `batman-work` in your workspace, then you could:
+
+```bash
+vi ~/.tmux/plugins/tmux-workspace-groupings-plugin/.config/batman-work.json
+```
+
+to create a file with contents:
+
+```json
+{
+  "build": {
+    "layout": "even-horizontal",
+    "panes": ["echo 'i am'", "echo 'batman'"]
+  },
+  "git": {
+    "layout": "tiled",
+    "panes": ["git status", "git diff"]
+  }
+}
+```
+
+This means whenever you open the `batman-work` project, you will see:
+
+1. in the `build` session, two panes with `echo 'i am'` and `echo 'batman'` in each
+2. in the `git` session, two panes with `git status` and `git diff` in each
+
+If you want a pane with no command initialised, you can simply include the empty string, e.g. `"panes": ["", ""]`
+
+The `layout` is just the name of a default tmux layout (i.e. it's a tmux thing, not a tmux-workspace-groupings-plugin thing).
+
 ## Options
 
 ```bash
@@ -48,9 +82,3 @@ set -g @groupings_file_system_poll_max_interval 15000
 set -g @groupings_special_session_name "___",
 set -g @groupings_special_window_name "___",
 ```
-
-### TODO
-
-This plugin is super early-development, TODO remains:
-
-- implement initialisation commands

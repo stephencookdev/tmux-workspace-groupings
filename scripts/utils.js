@@ -1,4 +1,4 @@
-const { readdirSync } = require("fs");
+const { readFileSync, readdirSync } = require("fs");
 const { execSync } = require("child_process");
 
 const getDirectories = (source) =>
@@ -88,6 +88,53 @@ const throwTmuxError = (err) => {
   );
 };
 
+const getPaneIds = (sessionTarget, groupingName) => {
+  const windows = getAllTmuxSessionWindows().filter(
+    ([sessionName, , windowName]) =>
+      sessionName === sessionTarget && windowName === groupingName
+  );
+  const paneIds = windows.map(([, , , , paneId]) => paneId);
+  return paneIds;
+};
+
+const applyConfig = (groupingName, sessionTargets, workspace, pluginRoot) => {
+  let configRaw;
+  try {
+    configRaw = readFileSync(`${pluginRoot}/.config/${groupingName}.json`);
+  } catch (_) {
+    // this will throw if the file doesn't exist, no worries about that
+  }
+  if (!configRaw) return;
+
+  const config = JSON.parse(configRaw);
+  sessionTargets.forEach((s) => {
+    const sessionConfig = config[s];
+    if (!sessionConfig) return;
+
+    const initialPaneIds = getPaneIds(s, groupingName);
+    const mainPaneId = initialPaneIds[0];
+    if (sessionConfig.panes) {
+      for (let i = 0; i < sessionConfig.panes.length; i++) {
+        if (sessionConfig.panes[i]) {
+          execSync(
+            `tmux send-keys -t ${s}:${groupingName} '${sessionConfig.panes[i]}' Enter`
+          );
+        }
+        if (i === sessionConfig.panes.length - 1) {
+          execSync(`tmux select-pane -t ${mainPaneId}`);
+        } else {
+          execSync(`tmux split-window -t ${mainPaneId} -c ${workspace}`);
+        }
+      }
+    }
+    if (sessionConfig.layout) {
+      execSync(
+        `tmux select-layout -t ${s}:${groupingName} ${sessionConfig.layout}`
+      );
+    }
+  });
+};
+
 module.exports = {
   getDirectories,
   getAllTmuxSessions,
@@ -100,4 +147,5 @@ module.exports = {
   runInAlternateScreen,
   restoreLastTmuxSession,
   throwTmuxError,
+  applyConfig,
 };
