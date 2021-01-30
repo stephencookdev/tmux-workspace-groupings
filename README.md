@@ -1,37 +1,72 @@
-# Tmux Workspace Groupings Plugin
+<div align="center">
+  <img width="140" src="./twg.png" />
+  <h1>Tmux Workspace Groupings</h1>
+</div>
 
-This plugin supports a workspace grouping workflow.
+An easy way to create, open, and close groupings of workspaces.
+
+![TWG working in zsh](./preview.gif)
+
+## Requirements
+
+- [tmux](https://github.com/tmux/tmux/wiki/Installing)
+- [tpm](https://github.com/tmux-plugins/tpm#installation)
+- [node](https://nodejs.org/en/download/package-manager/)
 
 ## Install
 
-Add the plugin to the list of tpm plugins in your tmux.conf
+Add the following to your `~/.tmux.conf`:
 
 ```bash
-# Download and use the plugin
-set -g @plugin 'stephencookdev/tmux-workspace-groupings-plugin'
+# Download and use TWG
+set -g @plugin 'stephencookdev/tmux-workspace-groupings'
 
-# Set the workspace for the plugin to use
+# Set the workspace for TWG to use
 set -g @groupings_workspace_directory /Users/batman/projects
 ```
 
-Hit `prefix + I` to install.
+Once saved, hit <kbd>prefix</kbd> + <kbd>I</kbd> to install.
 
 ## Commands
 
-Once installed, the following bindings are set up:
+| Keybinding                       | Description                                                 |
+| -------------------------------- | ----------------------------------------------------------- |
+| <kbd>prefix</kbd> + <kbd>B</kbd> | Opens the groupings create/swap menu                        |
+| <kbd>prefix</kbd> + <kbd>b</kbd> | Switch between sessions in the active group                 |
+| <kbd>prefix</kbd> + <kbd>X</kbd> | Close all windows, in all sessions, of the current grouping |
 
-- `prefix + B` — this opens the create/swap menu
-- `prefix + b` — this swaps between sessions of a grouping
-- `prefix + X` — this closes all windows (in all sessions) of a particular grouping
+## Options
 
-## Initial panes
+```bash
+# The workspace TWG will use to look for projects
+# (Required)
+set -g @groupings_workspace_directory /Users/batman/projects
+
+# The sessions to create for each project (comma separated)
+# Default: 'build,git'
+set -g @groupings_session_targets 'build,git,test'
+
+# The min/max polling frequency of your file-system when running.
+# TWG requires this to stay in sync with your workspace and tmux status
+# Default for min: 1000 (1 second)
+# Default for max: 15000 (15 seconds)
+set -g @groupings_file_system_poll_min_interval 1000
+set -g @groupings_file_system_poll_max_interval 15000
+
+# The name of the special session and window created by TWG to run
+# the create/swap menu quickly
+set -g @groupings_special_session_name "___",
+set -g @groupings_special_window_name "___",
+```
+
+## Initial Panes
 
 You can initalise panes with commands by creating some JSON config files.
 
 For example, if you had a project called `batman-work` in your workspace, then you could:
 
 ```bash
-vi ~/.tmux/plugins/tmux-workspace-groupings-plugin/.config/batman-work.json
+vi ~/.tmux/plugins/tmux-workspace-groupings/.config/batman-work.json
 ```
 
 to create a file with contents:
@@ -49,36 +84,17 @@ to create a file with contents:
 }
 ```
 
-This means whenever you open the `batman-work` project, you will see:
+Now whenever you open the `batman-work` project, you will see:
 
 1. in the `build` session, two panes with `echo 'i am'` and `echo 'batman'` in each
 2. in the `git` session, two panes with `git status` and `git diff` in each
 
-If you want a pane with no command initialised, you can simply include the empty string, e.g. `"panes": ["", ""]`
+If you want a pane with no command initialised, you can include the empty string, e.g. `"panes": ["", ""]`
 
-The `layout` is just the name of a default tmux layout (i.e. it's a tmux thing, not a tmux-workspace-groupings-plugin thing).
+The `layout` is the name of a default tmux layout (i.e. it's a tmux thing, not a tmux-workspace-groupings thing).
 
-## Options
+## New Project
 
-```bash
-# The the workspace the plugin will use to look for projects
-# (Required)
-set -g @groupings_workspace_directory /Users/batman/projects
+Paste a GitHub URL into the create/swap menu to clone the repo into your workspace. TWG will also create a grouping for the new project.
 
-# The sessions that will be created for each project (comma separated)
-# Default: 'build,git'
-set -g @groupings_session_targets 'build,git,test'
-
-# The min/max polling frequency that the plugin will interact with
-# your file-system when running. This is required for the plugin
-# to stay in sync with your workspace and tmux status
-# Default for min: 1000 (1 second)
-# Default for max: 15000 (15 seconds)
-set -g @groupings_file_system_poll_min_interval 1000
-set -g @groupings_file_system_poll_max_interval 15000
-
-# The name of the special session and window created by the plugin
-# so the plugin can run quickly (especially for the create/swap menu)
-set -g @groupings_special_session_name "___",
-set -g @groupings_special_window_name "___",
-```
+![Cloning a new project and creating a grouping](./new-project.gif)
