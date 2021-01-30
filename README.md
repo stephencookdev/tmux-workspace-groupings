@@ -1,11 +1,11 @@
 <div align="center">
-  <img width="140" src="./twg.png" />
+  <img width="140" src="https://raw.githubusercontent.com/stephencookdev/tmux-workspace-groupings/assets/twg.png" />
   <h1>Tmux Workspace Groupings</h1>
 </div>
 
 An easy way to create, open, and close groupings of workspaces.
 
-![TWG working in zsh](./preview.gif)
+![TWG working in zsh](https://raw.githubusercontent.com/stephencookdev/tmux-workspace-groupings/assets/preview.gif)
 
 ## Requirements
 
@@ -97,4 +97,4 @@ The `layout` is the name of a default tmux layout (i.e. it's a tmux thing, not a
 
 Paste a GitHub URL into the create/swap menu to clone the repo into your workspace. TWG will also create a grouping for the new project.
 
-![Cloning a new project and creating a grouping](./new-project.gif)
+![Cloning a new project and creating a grouping](https://raw.githubusercontent.com/stephencookdev/tmux-workspace-groupings/assets/new-project.gif)
