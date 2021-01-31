@@ -2,7 +2,7 @@
   "name": "tmux-workspace-groupings-plugin",
   "version": "1.0.0",
   "scripts": {
-    "dev": "webpack --mode development",
+    "dev": "webpack --mode development && ./build_git_sessions_plugin.tmux && cat local_dev_notice",
     "build": "rm -rf dist ; webpack --mode production ; rm -r dist/*.LICENSE.txt"
   },
   "dependencies": {
