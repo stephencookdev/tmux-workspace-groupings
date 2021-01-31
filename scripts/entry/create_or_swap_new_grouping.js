@@ -1,6 +1,8 @@
 const path = require("path");
-const { getAllTmuxSessionWindows, throwTmuxError } = require("../utils");
+const { getAllTmuxSessionWindows } = require("../utils");
 const { getTmuxOption } = require("../options");
+
+require("../init");
 
 const SPECIAL_SWAPPER_SESSION = getTmuxOption(
   "@groupings_special_session_name"
@@ -16,12 +18,6 @@ const FILE_SYSTEM_MAX_INTERVAL = getTmuxOption(
 );
 const PLUGIN_ROOT = path.join(__dirname, ".."); // we will be at `dist`, so one up should be the plugin root
 
-if (!WORKSPACE) {
-  throwTmuxError(
-    "You need to incude a `set-option -g workspace MY_WORKSPACE` to point to where your workspace directory is"
-  );
-}
-
 const sessions = getAllTmuxSessionWindows();
 const windowsInSpecialSession = sessions.filter(
   ([sessionName]) => sessionName === SPECIAL_SWAPPER_SESSION
@@ -34,7 +30,7 @@ const [, isSpecialSessionAttached, , isSpecialWindowActive] =
 const isSpecialOpen =
   isSpecialSessionAttached === "1" && isSpecialWindowActive === "1";
 
-const cmd = `'node ${__filename}'`;
+const cmd = `node ${__filename}`;
 
 if (isSpecialOpen) {
   // import only when needed in order to be as speedy as possible

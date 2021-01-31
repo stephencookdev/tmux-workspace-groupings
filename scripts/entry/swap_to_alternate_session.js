@@ -1,6 +1,8 @@
 const { tmuxSwitch, getAllTmuxSessionWindows } = require("../utils");
 const { getTmuxOption } = require("../options");
 
+require("../init");
+
 const SESSION_TARGETS = getTmuxOption("@groupings_session_targets").split(",");
 
 const windows = getAllTmuxSessionWindows();

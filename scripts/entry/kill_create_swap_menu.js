@@ -1,6 +1,8 @@
 const { getAllTmuxSessions, killTmuxSession } = require("../utils");
 const { getTmuxOption } = require("../options");
 
+require("../init");
+
 const SPECIAL_SWAPPER_SESSION = getTmuxOption(
   "@groupings_special_session_name"
 );
