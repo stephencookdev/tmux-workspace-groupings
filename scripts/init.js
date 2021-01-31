@@ -19,6 +19,7 @@ process.on("uncaughtException", (error, origin) => {
   const errorLog = {
     timeOfError,
     error: error.toString(),
+    stack: error.stack,
     origin,
   };
   const errorLogString = JSON.stringify(errorLog, null, 2);
