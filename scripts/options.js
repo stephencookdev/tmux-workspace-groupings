@@ -2,8 +2,6 @@ const { execSync } = require("child_process");
 
 const defaultValues = {
   "@groupings_session_targets": "build,git",
-  "@groupings_special_session_name": "___",
-  "@groupings_special_window_name": "___",
   "@groupings_file_system_poll_min_interval": 1000,
   "@groupings_file_system_poll_max_interval": 15000,
 

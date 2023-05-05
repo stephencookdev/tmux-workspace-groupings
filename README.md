@@ -52,11 +52,6 @@ set -g @groupings_session_targets 'build,git,test'
 # Default for max: 15000 (15 seconds)
 set -g @groupings_file_system_poll_min_interval 1000
 set -g @groupings_file_system_poll_max_interval 15000
-
-# The name of the special session and window created by TWG to run
-# the create/swap menu quickly
-set -g @groupings_special_session_name "___",
-set -g @groupings_special_window_name "___",
 ```
 
 ## Initial Panes

@@ -2,7 +2,7 @@ const path = require("path");
 const { exec } = require("child_process");
 const React = require("react");
 const { useEffect, useState } = React;
-const { useStdin, Box, Text, Spacer } = require("ink");
+const { useStdin, useStdout, Box, Text, Spacer } = require("ink");
 const fuzzysort = require("fuzzysort");
 const FullScreen = require("./full_screen.jsx");
 const Spinner = require("./spinner.jsx");
@@ -12,7 +12,6 @@ const {
   getDirectories,
   tmuxSwitch,
   tmuxCreate,
-  restoreLastTmuxSession,
   applyConfig,
 } = require("./utils");
 
@@ -41,6 +40,7 @@ const useTextInput = (callback) => {
         escape: input === "\u001B",
         backspace: input === "\u0008",
         delete: input === "\u007F" || input === "\u001B[3~",
+        num: /^[0-9]$/.test(input) ? input : null,
       };
 
       if (Object.values(key).find(Boolean)) {
@@ -49,7 +49,7 @@ const useTextInput = (callback) => {
 
       const textInput = input
         .split("")
-        .filter((c) => /^[a-z0-9 -_]$/i.test(c))
+        .filter((c) => /^[a-z -_]$/i.test(c))
         .join("");
 
       if (textInput) callback(textInput, {});
@@ -92,6 +92,31 @@ const useFileSystemRefs = ({
   return [fileSystemRefs, updateFromFilesystem];
 };
 
+const DirectoryList = ({ dirs, pointer, windowSessions, rowHeight }) => {
+  const offset = Math.max(0, pointer - rowHeight + 1);
+  const offsetPointer = pointer - offset;
+  const visibleDirs = dirs.slice(offset, offset + rowHeight);
+
+  return visibleDirs.map((d, i) => {
+    const offsetI = i + offset;
+    const dName = offsetI < 10 ? `(${offsetI}) ${d}` : d;
+    return (
+      <Text
+        key={d}
+        color={
+          i === offsetPointer
+            ? "green"
+            : windowSessions.includes(d)
+            ? "yellow"
+            : "white"
+        }
+      >
+        {i === offsetPointer ? `✳ ${dName} ✳` : `  ${dName}  `}
+      </Text>
+    );
+  });
+};
+
 const App = ({
   workspace,
   sessionTargets,
@@ -99,6 +124,7 @@ const App = ({
   fileSystemMaxInterval,
   pluginRoot,
 }) => {
+  const { stdout } = useStdout();
   const [text, setText] = useState("");
   const [pointer, setPointer] = useState(0);
   const [isCloning, setIsCloning] = useState(false);
@@ -110,17 +136,20 @@ const App = ({
   });
 
   const { dirs, windowSessions } = fileSystemRefs;
-  const matchingDirs = text
-    ? fuzzysort.go(text, dirs).map((r) => r.target)
-    : dirs;
+  const matchingDirs = (
+    text ? fuzzysort.go(text, dirs).map((r) => r.target) : dirs
+  ).sort((a, b) => {
+    const aIsSession = windowSessions.includes(a);
+    const bIsSession = windowSessions.includes(b);
+    if (aIsSession && !bIsSession) return -1;
+    if (!aIsSession && bIsSession) return 1;
+    return windowSessions.indexOf(a) - windowSessions.indexOf(b);
+  });
 
   const roundedPointer = (pointer + matchingDirs.length) % matchingDirs.length;
 
   const exit = () => {
-    updateFromFilesystem();
-    setText("");
-    setPointer(0);
-    setIsCloning(false);
+    process.exit(0);
   };
 
   const gitHubMatch = /^git@.*\/(.*)\.git$/.exec(text)?.[1];
@@ -139,15 +168,18 @@ const App = ({
       setPointer(0);
     } else if (key.escape) {
       exit();
-      restoreLastTmuxSession();
-    } else if (key.return && dirs[roundedPointer]) {
-      const matchingDir = matchingDirs[roundedPointer];
+    } else if (key.num || (key.return && dirs[roundedPointer])) {
+      const matchingDir = key.num
+        ? matchingDirs[key.num]
+        : matchingDirs[roundedPointer];
       const groupingWorkspace = path.join(workspace, matchingDir);
-      if (!windowSessions.includes(matchingDir)) {
+      if (windowSessions.includes(matchingDir)) {
+        tmuxSwitch(null, matchingDir);
+      } else {
         tmuxCreate(matchingDir, groupingWorkspace, sessionTargets);
         applyConfig(matchingDir, sessionTargets, groupingWorkspace, pluginRoot);
+        tmuxSwitch(sessionTargets[0], matchingDir);
       }
-      tmuxSwitch(sessionTargets[0], matchingDir);
       exit();
     } else if (key.return && gitHubMatch) {
       setIsCloning(true);
@@ -170,6 +202,8 @@ const App = ({
     }
   });
 
+  const directoryHeight = Math.floor(stdout.rows * 0.8);
+
   if (isCloning) {
     return (
       <FullScreen
@@ -191,28 +225,31 @@ const App = ({
       flexDirection="column"
     >
       <Box borderStyle="round">
-        <Text>{text || " "}</Text>
+        <Text>{text || "..."}</Text>
       </Box>
+
       <Spacer />
-      {matchingDirs.map((d, i) => (
-        <Text
-          key={d}
-          color={
-            i === roundedPointer
-              ? "green"
-              : windowSessions.includes(d)
-              ? "yellow"
-              : "white"
-          }
-        >
-          {d}
-        </Text>
-      ))}
-      {gitHubMatch && (
+
+      {gitHubMatch ? (
         <Text color="yellow">
           Hit enter to download <Text color="green">{gitHubMatch}</Text>
         </Text>
+      ) : (
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
+          height={directoryHeight}
+        >
+          <DirectoryList
+            pointer={roundedPointer}
+            dirs={matchingDirs}
+            windowSessions={windowSessions}
+            rowHeight={directoryHeight}
+          />
+        </Box>
       )}
+
       <Spacer />
     </FullScreen>
   );

@@ -1,1 +1,88 @@
-(()=>{var e={9274:(e,t,s)=>{const{appendFileSync:o}=s(5747),i=s(5622),{throwTmuxError:n}=s(2462),{getTmuxOption:r}=s(7309),l=r("@groupings_workspace_directory"),c=i.join(__dirname,"..");l||n("You need to incude a `set-option -g workspace MY_WORKSPACE` to point to where your workspace directory is"),process.on("uncaughtException",((e,t)=>{const s=`${c}/twg.error.log`,i={timeOfError:(new Date).toISOString(),error:e.toString(),stack:e.stack,origin:t},r=JSON.stringify(i,null,2);o(s,r+"\n"),n(`Unexpected TWG error! Error log written to ${s}`)}))},7309:(e,t,s)=>{const{execSync:o}=s(3129),i={"@groupings_session_targets":"build,git","@groupings_special_session_name":"___","@groupings_special_window_name":"___","@groupings_file_system_poll_min_interval":1e3,"@groupings_file_system_poll_max_interval":15e3,"@groupings_workspace_directory":null};e.exports={getTmuxOption:e=>o(`tmux show-option -gqv ${e}`).toString().trim()||i[e]}},2462:(e,t,s)=>{const{readFileSync:o,readdirSync:i}=s(5747),{execSync:n}=s(3129),r=e=>e?`"${e.replace(/"/g,'\\"')}"`:e,l=()=>n("tmux list-sessions -F '#{session_name}//#{session_attached}'").toString().split("\n").filter(Boolean).map((e=>e.split("//"))),c=()=>n("tmux list-windows -a -F '#{session_name}//#{session_attached}//#{window_name}//#{window_active}//#{pane_id}'").toString().split("\n").filter(Boolean).map((e=>e.split("//")));e.exports={getDirectories:e=>i(e,{withFileTypes:!0}).filter((e=>e.isDirectory())).map((e=>e.name)),getAllTmuxSessions:l,getAllTmuxSessionWindows:c,tmuxSwitch:(e,t)=>{e&&t?n(`tmux select-window -t ${r(e)}:${r(t)}`):t&&n(`tmux select-window -t ${r(t)}`),e&&n(`tmux switch-client -t ${r(e)}`)},getTmuxWindows:e=>c().filter((([t])=>t===e)).map((([,,e])=>e)),tmuxCreate:(e,t,s,o="")=>{const i=l().map((([e])=>e));s.forEach((s=>{i.includes(s)?n(`tmux new-window -t ${r(s)} -n ${r(e)} -c ${r(t)} ${r(o)}`):n(`tmux new-session -A -d -s ${r(s)} -n ${r(e)} -c ${r(t)} ${r(o)}`)}))},closeTmuxWindow:(e,t)=>{n(`tmux kill-window -t ${r(e)}:${r(t)}`)},killTmuxSession:e=>{n(`tmux kill-session -t ${r(e)}`)},runInAlternateScreen:()=>{process.stdout.write("[?1049h"),process.on("exit",(()=>{process.stdout.write("[?1049l")}))},restoreLastTmuxSession:()=>{n("tmux switch-client -l")},throwTmuxError:e=>{n(`tmux display-message ${r(e)}`),process.exit(0)},applyConfig:(e,t,s,i)=>{let l;try{l=o(`${i}/.config/${e}.json`)}catch(e){}if(!l)return;const p=JSON.parse(l);t.forEach((t=>{const o=p[t];if(!o)return;const i=((e,t)=>c().filter((([s,,o])=>s===e&&o===t)).map((([,,,,e])=>e)))(t,e)[0];if(o.panes)for(let l=0;l<o.panes.length;l++)o.panes[l]&&n(`tmux send-keys -t ${r(t)}:${r(e)} ${r(o.panes[l])} Enter`),l===o.panes.length-1?n(`tmux select-pane -t ${r(i)}`):n(`tmux split-window -t ${r(i)} -c ${r(s)}`);o.layout&&n(`tmux select-layout -t ${r(t)}:${r(e)} ${r(o.layout)}`)}))}}},3129:e=>{"use strict";e.exports=require("child_process")},5747:e=>{"use strict";e.exports=require("fs")},5622:e=>{"use strict";e.exports=require("path")}},t={};function s(o){if(t[o])return t[o].exports;var i=t[o]={exports:{}};return e[o](i,i.exports,s),i.exports}(()=>{const{getAllTmuxSessions:e,killTmuxSession:t}=s(2462),{getTmuxOption:o}=s(7309);s(9274);const i=o("@groupings_special_session_name");e().map((([e])=>e)).includes(i)&&t(i)})()})();
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./scripts/options.js":
+/*!****************************!*\
+  !*** ./scripts/options.js ***!
+  \****************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const { execSync } = __webpack_require__(/*! child_process */ \"child_process\");\n\nconst defaultValues = {\n  \"@groupings_session_targets\": \"build,git\",\n  \"@groupings_file_system_poll_min_interval\": 1000,\n  \"@groupings_file_system_poll_max_interval\": 15000,\n\n  // mandatory options\n  \"@groupings_workspace_directory\": null,\n};\n\nconst getTmuxOption = (option) => {\n  const value = execSync(`tmux show-option -gqv ${option}`).toString().trim();\n  return value || defaultValues[option];\n};\n\nmodule.exports = { getTmuxOption };\n\n\n//# sourceURL=webpack://tmux-workspace-groupings-plugin/./scripts/options.js?");
+
+/***/ }),
+
+/***/ "./scripts/utils.js":
+/*!**************************!*\
+  !*** ./scripts/utils.js ***!
+  \**************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("const { readFileSync, readdirSync } = __webpack_require__(/*! fs */ \"fs\");\nconst { execSync } = __webpack_require__(/*! child_process */ \"child_process\");\n\n// create \"safe quotes\", e.g. turning\n// a string with a \"quote\" in it\n// into\n// \"a string with a \\\"quote\\\" in it\"\nconst sq = (str) => (str ? `\"${str.replace(/\"/g, '\\\\\"')}\"` : str);\n\nconst getDirectories = (source) =>\n  readdirSync(source, { withFileTypes: true })\n    .filter((dirent) => dirent.isDirectory())\n    .map((dirent) => dirent.name);\n\nconst getAllTmuxSessions = () => {\n  return execSync(\n    \"tmux list-sessions -F '#{session_name}//#{session_attached}'\"\n  )\n    .toString()\n    .split(\"\\n\")\n    .filter(Boolean)\n    .map((w) => w.split(\"//\"));\n};\n\nconst getAllTmuxSessionWindows = () => {\n  return execSync(\n    \"tmux list-windows -a -F '#{session_name}//#{session_attached}//#{window_name}//#{window_active}//#{pane_id}'\"\n  )\n    .toString()\n    .split(\"\\n\")\n    .filter(Boolean)\n    .map((w) => w.split(\"//\"));\n};\n\nconst tmuxSwitch = (session, win) => {\n  if (session && win)\n    execSync(`tmux select-window -t ${sq(session)}:${sq(win)}`);\n  else if (win) execSync(`tmux select-window -t ${sq(win)}`);\n\n  if (session) execSync(`tmux switch-client -t ${sq(session)}`);\n};\n\nconst getTmuxWindows = (targetSession) => {\n  const windowsForTarget = getAllTmuxSessionWindows()\n    .filter(([sessionName]) => sessionName === targetSession)\n    .map(([, , windowName]) => windowName);\n\n  return windowsForTarget;\n};\n\nconst tmuxCreate = (target, workspace, sessionTargets, cmd = \"\") => {\n  const aliveSessions = getAllTmuxSessions().map(\n    ([sessionName]) => sessionName\n  );\n\n  sessionTargets.forEach((session) => {\n    if (aliveSessions.includes(session)) {\n      execSync(\n        `tmux new-window -t ${sq(session)} -n ${sq(target)} -c ${sq(\n          workspace\n        )} ${sq(cmd)}`\n      );\n    } else {\n      execSync(\n        `tmux new-session -A -d -s ${sq(session)} -n ${sq(target)} -c ${sq(\n          workspace\n        )} ${sq(cmd)}`\n      );\n    }\n  });\n};\n\nconst closeTmuxWindow = (session, win) => {\n  execSync(`tmux kill-window -t ${sq(session)}:${sq(win)}`);\n};\n\nconst killTmuxSession = (session) => {\n  execSync(`tmux kill-session -t ${sq(session)}`);\n};\n\nconst restoreLastTmuxSession = () => {\n  execSync(\"tmux switch-client -l\");\n};\n\nconst runInAlternateScreen = () => {\n  const enterAltScreenCommand = \"\\x1b[?1049h\";\n  const leaveAltScreenCommand = \"\\x1b[?1049l\";\n  process.stdout.write(enterAltScreenCommand);\n  process.on(\"exit\", () => {\n    process.stdout.write(leaveAltScreenCommand);\n  });\n};\n\nconst throwTmuxError = (err) => {\n  execSync(`tmux display-message ${sq(err)}`);\n  process.exit(\n    // lie about our exit code so we don't show weird errors to the user, only the display-message error\n    0\n  );\n};\n\nconst getPaneIds = (sessionTarget, groupingName) => {\n  const windows = getAllTmuxSessionWindows().filter(\n    ([sessionName, , windowName]) =>\n      sessionName === sessionTarget && windowName === groupingName\n  );\n  const paneIds = windows.map(([, , , , paneId]) => paneId);\n  return paneIds;\n};\n\nconst applyConfig = (groupingName, sessionTargets, workspace, pluginRoot) => {\n  let configRaw;\n  try {\n    configRaw = readFileSync(`${pluginRoot}/.config/${groupingName}.json`);\n  } catch (_) {\n    // this will throw if the file doesn't exist, no worries about that\n  }\n  if (!configRaw) return;\n\n  const config = JSON.parse(configRaw);\n  sessionTargets.forEach((s) => {\n    const sessionConfig = config[s];\n    if (!sessionConfig) return;\n\n    const initialPaneIds = getPaneIds(s, groupingName);\n    const mainPaneId = initialPaneIds[0];\n    if (sessionConfig.panes) {\n      for (let i = 0; i < sessionConfig.panes.length; i++) {\n        if (sessionConfig.panes[i]) {\n          execSync(\n            `tmux send-keys -t ${sq(s)}:${sq(groupingName)} ${sq(\n              sessionConfig.panes[i]\n            )} Enter`\n          );\n        }\n        if (i === sessionConfig.panes.length - 1) {\n          execSync(`tmux select-pane -t ${sq(mainPaneId)}`);\n        } else {\n          execSync(\n            `tmux split-window -t ${sq(mainPaneId)} -c ${sq(workspace)}`\n          );\n        }\n      }\n    }\n    if (sessionConfig.layout) {\n      execSync(\n        `tmux select-layout -t ${sq(s)}:${sq(groupingName)} ${sq(\n          sessionConfig.layout\n        )}`\n      );\n    }\n  });\n};\n\nmodule.exports = {\n  getDirectories,\n  getAllTmuxSessions,\n  getAllTmuxSessionWindows,\n  tmuxSwitch,\n  getTmuxWindows,\n  tmuxCreate,\n  closeTmuxWindow,\n  killTmuxSession,\n  runInAlternateScreen,\n  restoreLastTmuxSession,\n  throwTmuxError,\n  applyConfig,\n};\n\n\n//# sourceURL=webpack://tmux-workspace-groupings-plugin/./scripts/utils.js?");
+
+/***/ }),
+
+/***/ "child_process":
+/*!********************************!*\
+  !*** external "child_process" ***!
+  \********************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");;
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+(() => {
+/*!************************************************!*\
+  !*** ./scripts/entry/kill_create_swap_menu.js ***!
+  \************************************************/
+eval("const { getAllTmuxSessions, killTmuxSession } = __webpack_require__(/*! ../utils */ \"./scripts/utils.js\");\nconst { getTmuxOption } = __webpack_require__(/*! ../options */ \"./scripts/options.js\");\n\n\n//# sourceURL=webpack://tmux-workspace-groupings-plugin/./scripts/entry/kill_create_swap_menu.js?");
+})();
+
+/******/ })()
+;
